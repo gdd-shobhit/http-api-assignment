@@ -6,7 +6,34 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
+  const init = () => {
+    const userForm = document.querySelector("#userForm");
+  }
 
+  const handleResponse = (xhr,parseResponse) =>{
+    const content = document.querySelector('#content');
+
+    switch(xhr){
+      case 200: content.innerHTML =`<b> Success </b>`;
+    }
+  }
+
+  const requestUpdate = (e,userForm) => {
+    const xhr = new XMLHttpRequest();
+  xhr.open(method,url);
+
+  xhr.setRequestHeader('Accept','application/json');
+
+  if(method === 'GET'){
+    xhr.onload = () =>handleResponse(xhr,true);
+    // else false
+  }
+
+  xhr.send();
+
+  e.preventDefault();
+  }
+  
   </script>
 </head>
 <body>
