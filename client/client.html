@@ -6,34 +6,70 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
   <script type="text/babel">
-  const init = () => {
-    const userForm = document.querySelector("#userForm");
-  }
+const handleResponse = (xhr) => {
 
-  const handleResponse = (xhr,parseResponse) =>{
-    const content = document.querySelector('#content');
+  const type = xhr.getResponseHeader('content-type');
+      const content = document.querySelector("#content");
+      if(type === 'application/json')
+      {
+        const obj = JSON.parse(xhr.response);
+        
+        content.innerHTML = `<b>${obj.id}</b><br><p>Messge:${obj.message}</p>`;
+        console.dir(obj);
+      }
+      else if(type === 'text/xml')
+      {
+        const id = xhr.responseXML.querySelector('id').textContent;
+        const message = xhr.responseXML.querySelector('message').textContent;
 
-    switch(xhr){
-      case 200: content.innerHTML =`<b> Success </b>`;
+        content.innerHTML = `<b>${id}</b><br><br>Messge: ${message}`;
+        console.dir(xhr.response);
+      }
+
+     
+     
+    };
+    
+    const sendAjax = (url,acceptedType) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url);
+      xhr.setRequestHeader ("Accept", acceptedType);
+      xhr.onload = () => handleResponse(xhr);
+      xhr.send();
+    };
+
+    const handleDifferentRequest = (requestType) =>{
+      const type = document.querySelector("#type");
+
+      switch(requestType)
+      {
+        case '/success': sendAjax('/success',type.value);
+        break;
+        case '/badRequest':sendAjax('/badRequest',type.value);
+        break;
+        case '/unauthorized':sendAjax('/unauthorized',type.value);
+        break;
+        case '/internal':sendAjax('/internal',type.value);
+        break;
+        case '/notImplemented':sendAjax('/notImplemented',type.value);
+        break;
+        case '/forbidden':sendAjax('/forbidden',type.value);
+        break;
+        case '/notFound':sendAjax('/notFound',type.value);
+        break;
+        default: success
+      }
     }
-  }
 
-  const requestUpdate = (e,userForm) => {
-    const xhr = new XMLHttpRequest();
-  xhr.open(method,url);
+    const init = () => {
+      const buttonType = document.querySelector("#page");
+      const sendButton = document.querySelector("#send");
+      sendButton.addEventListener('click', ()=>{
+        handleDifferentRequest(buttonType.value)} );
+    };
 
-  xhr.setRequestHeader('Accept','application/json');
+    window.onload = init;
 
-  if(method === 'GET'){
-    xhr.onload = () =>handleResponse(xhr,true);
-    // else false
-  }
-
-  xhr.send();
-
-  e.preventDefault();
-  }
-  
   </script>
 </head>
 <body>
